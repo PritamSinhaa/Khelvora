@@ -1,0 +1,11 @@
+import moduleRouter from "../../utils/router.js";
+import validate from "../../middleware/validate.js";
+import * as controller from "./notification.controller.js";
+import * as validation from "./notification.validation.js";
+
+const router = moduleRouter();
+
+router.get("/", validate(validation.list, "query"), controller.list);
+router.patch("/:id/read", controller.read);
+
+export default router;
