@@ -1,0 +1,145 @@
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+@import "@fontsource/barlow-condensed/700.css";
+@import "@fontsource/barlow-condensed/900-italic.css";
+@import "tailwindcss";
+
+@theme {
+  --color-background: #08141f;
+  --color-surface: #0c1b29;
+  --color-surface-hover: #142a3c;
+  --color-border: #294358;
+  --color-primary: #c6ff36;
+  --color-primary-hover: #d6ff71;
+  --color-content: #f5f7ff;
+  --color-muted: #a5b8d0;
+  --font-sans: "Roboto", sans-serif;
+  --font-display: "Barlow Condensed", Impact, sans-serif;
+  --animate-enter: enter 500ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+
+  @keyframes enter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@layer base {
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--color-background);
+    color: var(--color-content);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root { min-height: 100dvh; }
+  button, input, select, textarea { font: inherit; }
+  button:not(:disabled), select { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  input, select, textarea { color-scheme: dark; }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+  }
+
+  ::selection {
+    background: var(--color-primary);
+    color: var(--color-background);
+  }
+
+  a, button, input, textarea, select {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  img { max-width: 100%; }
+  button, a { touch-action: manipulation; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .stack { @apply flex flex-col gap-5; }
+  .row { @apply flex flex-wrap items-center gap-3; }
+  .between { @apply flex flex-wrap items-center justify-between gap-3; }
+
+  .panel {
+    @apply rounded-2xl border border-border bg-surface p-5 sm:p-6;
+  }
+
+  .page-title {
+    @apply font-display text-4xl font-bold uppercase tracking-wide sm:text-5xl;
+  }
+
+  .section-title { @apply text-lg font-bold tracking-tight; }
+
+  .eyebrow {
+    @apply text-[11px] font-bold uppercase tracking-[0.2em] text-primary;
+  }
+
+  .btn {
+    @apply inline-flex min-h-11 shrink-0 items-center justify-center gap-2
+      rounded-xl border border-transparent bg-primary px-4 py-2.5 text-sm
+      font-bold text-background transition-colors hover:bg-primary-hover
+      disabled:opacity-45;
+  }
+
+  .btn.secondary {
+    @apply border-border bg-transparent text-content
+      hover:border-primary/50 hover:bg-surface-hover;
+  }
+
+  .btn.danger {
+    @apply border-red-400/30 bg-red-400/5 text-red-300 hover:bg-red-400/10;
+  }
+
+  .badge {
+    @apply inline-flex w-fit items-center rounded-lg border border-primary/20
+      bg-primary/10 px-2.5 py-1 text-[11px] font-semibold capitalize text-primary;
+  }
+
+  .field { @apply flex min-w-0 flex-col gap-2 text-sm font-medium; }
+
+  .field input:not([type="checkbox"]),
+  .field select,
+  .field textarea {
+    @apply min-h-11 w-full min-w-0 rounded-xl border border-border bg-background
+      px-3 py-2.5 text-sm font-normal text-content placeholder:text-muted/60
+      focus:border-primary/70;
+  }
+
+  .field textarea { @apply min-h-24 resize-y; }
+
+  .field input[type="file"] {
+    @apply text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-surface-hover
+      file:px-3 file:py-1.5 file:text-content;
+  }
+
+  .notice {
+    @apply flex items-start gap-2 rounded-xl border border-primary/20
+      bg-primary/5 p-3 text-sm leading-relaxed text-primary;
+  }
+
+  .notice-error {
+    @apply border-red-400/25 bg-red-400/5 text-red-300;
+  }
+
+  .avatar {
+    @apply flex size-12 shrink-0 items-center justify-center overflow-hidden
+      rounded-xl border border-primary/25 bg-primary/10 font-display
+      text-xl font-bold text-primary;
+  }
+
+  .list-item {
+    @apply flex flex-wrap items-center justify-between gap-4 border-t
+      border-border py-4 first:border-t-0;
+  }
+}
