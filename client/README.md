@@ -1,16 +1,30 @@
-# React + Vite
+# Khelvora frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React single-page app built with Vite.
 
-Currently, two official plugins are available:
+## Deploy to Render
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Create a **Static Site** from this repository and set:
 
-## React Compiler
+- **Branch:** `main`
+- **Root Directory:** `client`
+- **Build Command:** `npm ci && npm run build`
+- **Publish Directory:** `dist`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Set `VITE_API_URL` in the Render service's Environment settings to the deployed backend API URL, including `/api/v1`, for example `https://your-api.onrender.com/api/v1`. This value is included in the public frontend bundle; never put secrets in `VITE_*` variables. `VITE_SOCKET_URL` is optional; the app derives the socket origin from `VITE_API_URL` when it is not set.
 
-## Expanding the Oxlint configuration
+In the static site's **Redirects/Rewrites** settings, add this SPA fallback:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+| Source | Destination | Action |
+| --- | --- | --- |
+| `/*` | `/index.html` | Rewrite |
+
+This lets React Router serve nested pages on direct visits and refreshes. Once Render assigns the frontend URL, update the backend's `CLIENT_ORIGIN` environment variable to that exact origin and redeploy the backend.
+
+For local development, copy `.env.example` to `.env`, then run `npm ci` and `npm run dev`.
+
+## Scripts
+
+- `npm run dev` starts the Vite development server.
+- `npm run build` creates the production site in `dist` and requires `VITE_API_URL`.
+- `npm run preview` serves the built site locally.
