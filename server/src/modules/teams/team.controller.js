@@ -21,3 +21,11 @@ export const transfer = respond((req) =>
 );
 
 export const stats = respond((req) => service.stats(req.params.id));
+
+export const setCover = respond((req) =>
+  service.setCover(
+    req.user,
+    req.params.id,
+    req.validated.body.uploadId,
+  ),
+);

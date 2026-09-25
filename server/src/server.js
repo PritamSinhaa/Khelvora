@@ -20,39 +20,50 @@ async function shutdown(code = 0) {
 
   stopJobs();
 
-  const timeout = setTimeout(() => process.exit(1), 10_000);
+  const timeout = setTimeout(() => {
+    process.exit(1);
+  }, 10_000);
+
   timeout.unref();
 
-  io.disconnectSockets(true);
-
-  server.close(async () => {
+  try {
+    // Also closes the attached HTTP server.
+    // Transport closure allows clients to reconnect.
+    await io.close();
     await mongoose.disconnect();
+  } catch (error) {
+    logger.error("Shutdown failed", error);
+    code = 1;
+  } finally {
     clearTimeout(timeout);
     process.exit(code);
-  });
-
-  server.closeIdleConnections();
+  }
 }
 
-process.on("SIGINT", () => shutdown());
-process.on("SIGTERM", () => shutdown());
+process.on("SIGINT", () => {
+  void shutdown();
+});
+
+process.on("SIGTERM", () => {
+  void shutdown();
+});
 
 server.on("error", (error) => {
   logger.error("HTTP server failed", error);
-  process.exit(1);
+  void shutdown(1);
 });
 
 try {
   await connectDatabase();
 
-  server.listen(env.port, () => {
-    logger.info(`Khelvora API: http://localhost:${env.port}`);
+  server.listen(env.port, "0.0.0.0", () => {
+    logger.info(
+      `Khelvora API listening on port ${env.port}`,
+    );
+
     stopJobs = startJobs();
   });
 } catch (error) {
   logger.error("Startup failed", error);
-  console.error(error.message);
-
-  await mongoose.disconnect();
-  process.exit(1);
+  await shutdown(1);
 }

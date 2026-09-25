@@ -1,11 +1,5 @@
 import { z } from "zod";
-import {
-  id,
-  point,
-  nonEmpty,
-  text,
-  page,
-} from "../../utils/validation.js";
+import { id, point, nonEmpty, text, page } from "../../utils/validation.js";
 import { skillLevels } from "../../constants/sports.js";
 
 export const create = z.strictObject({
@@ -20,7 +14,21 @@ export const create = z.strictObject({
 });
 
 export const update = nonEmpty(
-  create.omit({ sport: true }).partial(),
+  z.strictObject({
+    name: text(80).optional(),
+
+    bio: z.string().trim().max(1000).optional(),
+
+    city: text(100).optional(),
+
+    location: point.optional(),
+
+    skillLevel: z.enum(skillLevels).optional(),
+
+    lookingForPlayers: z.boolean().optional(),
+
+    maxMembers: z.number().int().min(2).max(100).optional(),
+  }),
 );
 
 export const list = page.extend({
@@ -30,4 +38,8 @@ export const list = page.extend({
 
 export const transfer = z.strictObject({
   userId: id,
+});
+
+export const cover = z.strictObject({
+  uploadId: id,
 });

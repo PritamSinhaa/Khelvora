@@ -11,13 +11,9 @@ router.post("/", validate(validation.create), controller.create);
 
 router.get("/:id/stats", controller.stats);
 
-router.patch(
-  "/:id/leader",
-  validate(validation.transfer),
-  controller.transfer,
-);
+router.patch("/:id/leader", validate(validation.transfer), controller.transfer);
 
 router.get("/:id", controller.detail);
 router.patch("/:id", validate(validation.update), controller.update);
-
+router.put("/:id/cover", validate(validation.cover), controller.setCover);
 export default router;

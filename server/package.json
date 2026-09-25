@@ -7,7 +7,8 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed:sports": "node scripts/seedSports.js",
-    "test": "node --test --test-concurrency=1 tests/unit/*.test.js tests/integration/*.test.js"
+    "test": "node --test --test-concurrency=1 tests/unit/*.test.js tests/integration/*.test.js",
+    "seed:demo": "node scripts/seedDemo.js"
   },
   "keywords": [],
   "author": "",
@@ -31,5 +32,8 @@
     "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2"
+  },
+  "engines": {
+    "node": "24.x"
   }
 }

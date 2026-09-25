@@ -4,7 +4,7 @@ import { env } from "./env.js";
 import { logger } from "../utils/logger.js";
 
 mongoose.set("transactionAsyncLocalStorage", true);
-mongoose.set("bufferCommands", false);
+mongoose.set("bufferCommands", true);
 
 export async function connectDatabase() {
   await mongoose.connect(env.mongodbUri);

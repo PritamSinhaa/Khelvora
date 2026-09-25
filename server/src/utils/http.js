@@ -1,5 +1,25 @@
-export default function asyncHandler(handler) {
-  return (req, res, next) => {
-    return Promise.resolve(handler(req, res, next)).catch(next);
+export function respond(handler, statusCode = 200) {
+  return async (req, res, next) => {
+    try {
+      const data = await handler(req);
+
+      return res.status(statusCode).json({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
   };
+}
+
+export function pageOptions(query) {
+  return {
+    skip: (query.page - 1) * query.limit,
+    limit: query.limit,
+  };
+}
+
+export function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

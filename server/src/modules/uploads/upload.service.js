@@ -21,19 +21,28 @@ export async function create(user, file) {
         resource_type: "image",
         allowed_formats: ["jpg", "png", "webp"],
 
-        transformation: [{
-          width: 1200,
-          height: 1200,
-          crop: "limit",
-        }],
+        transformation: [
+          {
+            width: 1200,
+            height: 1200,
+            crop: "limit",
+          },
+        ],
       },
 
       (error, result) => {
         if (error) {
+          console.error("Cloudinary upload error:", {
+            message: error.message,
+            httpCode: error.http_code,
+            name: error.name,
+          });
+
           reject(new AppError("Image upload failed.", 400));
-        } else {
-          resolve(result);
+          return;
         }
+
+        resolve(result);
       },
     );
 
@@ -47,9 +56,7 @@ export async function create(user, file) {
       url: uploaded.secure_url,
     });
   } catch (error) {
-    await cloudinary.uploader
-      .destroy(uploaded.public_id)
-      .catch(() => {});
+    await cloudinary.uploader.destroy(uploaded.public_id).catch(() => {});
 
     throw error;
   }
@@ -65,10 +72,7 @@ export async function useAvatar(user, id) {
     throw new AppError("Upload not found.", 404);
   }
 
-  await User.updateOne(
-    { _id: user._id },
-    { $set: { avatarUrl: upload.url } },
-  );
+  await User.updateOne({ _id: user._id }, { $set: { avatarUrl: upload.url } });
 
   return { avatarUrl: upload.url };
 }

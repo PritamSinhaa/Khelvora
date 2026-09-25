@@ -1,11 +1,19 @@
-export default class AppError extends Error {
-  constructor(message, statusCode = 400, details) {
-    super(message);
+export const logger = {
+  info(message) {
+    console.log(
+      new Date().toISOString(),
+      "[INFO]",
+      message,
+    );
+  },
 
-    this.name = "AppError";
-    this.statusCode = statusCode;
-    this.details = details;
-
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
+  error(message, error) {
+    console.error(
+      new Date().toISOString(),
+      "[ERROR]",
+      message,
+      error?.name || "Error",
+      error?.code || "",
+    );
+  },
+};

@@ -42,9 +42,15 @@ export default function errorHandler(error, req, res, next) {
     message = "Service unavailable. Please try again.";
   }
 
-  res.status(status).json({
+  return res.status(status).json({
     success: false,
     message,
-    ...(details ? { details } : {}),
+
+    ...(details
+      ? {
+          errors: details,
+          details,
+        }
+      : {}),
   });
 }

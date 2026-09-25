@@ -1,24 +1,17 @@
 import AppError from "../utils/AppError.js";
+import { verifyAccessToken } from "../services/token.service.js";
 
-export default function validate(schema, source = "body") {
-  return (req, res, next) => {
-    const result = schema.safeParse(req[source]);
+export default async function authenticate(req, res, next) {
+  const match = /^Bearer (\S+)$/.exec(
+    req.get("authorization") || "",
+  );
 
-    if (!result.success) {
-      const details = result.error.issues.map((issue) => ({
-        field: issue.path.join("."),
-        message: issue.message,
-      }));
+  if (!match) {
+    throw new AppError("Authentication required.", 401);
+  }
 
-      return next(
-        new AppError("Validation failed.", 400, details),
-      );
-    }
+  const { user } = await verifyAccessToken(match[1]);
 
-    // Express 5 exposes req.query as a getter.
-    req.validated ??= {};
-    req.validated[source] = result.data;
-
-    next();
-  };
+  req.user = user;
+  next();
 }

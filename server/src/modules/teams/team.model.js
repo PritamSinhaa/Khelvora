@@ -25,6 +25,7 @@ export default model(
     memberCount: { type: Number, default: 1 },
     revision: { type: Number, default: 0 },
     avatarUrl: { type: String, default: null },
+    coverUrl: { type: String, default: null },
   },
   [
     [{ location: "2dsphere" }, {}],

@@ -3,6 +3,7 @@ import Membership from "../memberships/membership.model.js";
 import Conversation from "../conversations/conversation.model.js";
 import Result from "../results/result.model.js";
 import Match from "../matches/match.model.js";
+import Upload from "../uploads/upload.model.js";
 
 import {
   tx,
@@ -138,3 +139,25 @@ export async function stats(id) {
 
   return { played: results.length, wins, draws, losses };
 }
+export const setCover = (user, teamId, uploadId) =>
+  tx(async () => {
+    await lockTeams([teamId]);
+
+    // Only the current team leader can change the cover.
+    const team = await leader(teamId, user._id);
+
+    // The leader must own the uploaded image.
+    const upload = await Upload.findOne({
+      _id: uploadId,
+      owner: user._id,
+    });
+
+    if (!upload) {
+      throw new AppError("Upload not found.", 404);
+    }
+
+    team.coverUrl = upload.url;
+    await team.save();
+
+    return team;
+  });
