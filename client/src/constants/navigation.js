@@ -1,12 +1,14 @@
 import {
-  Bell, CalendarDays, Compass, MessageCircle, Settings,
+  Bell, CalendarDays, Compass, LayoutDashboard, MessageCircle, Settings, Trophy,
   Flag, Swords, UserRound, UsersRound,
 } from "lucide-react";
 
 export const navigationItems = [
   { label: "Discover", to: "/discover", icon: Compass, mobileLabel: "Discover" },
+  { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard, mobileLabel: "Home" },
   { label: "My Teams", to: "/teams", icon: UsersRound, mobileLabel: "Teams" },
   { label: "Matches", to: "/matches", icon: CalendarDays, mobileLabel: "Matches" },
+  { label: "Leaderboards", to: "/leaderboards", icon: Trophy },
   { label: "Messages", to: "/messages", icon: MessageCircle, mobileLabel: "Chats" },
   { label: "Notifications", to: "/notifications", icon: Bell },
   { label: "Open Games", to: "/open-games", icon: Flag },

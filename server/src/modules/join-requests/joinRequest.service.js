@@ -47,6 +47,9 @@ export const create = (user, data) =>
       "join-request",
       `${user.name} requested to join your team.`,
       request._id,
+      "request",
+      `join-request:${request._id}:created`,
+      `/teams/${team._id}`,
     );
 
     return request;
@@ -92,12 +95,28 @@ export const decide = (user, id, decision) =>
     request.status = decision;
     await request.save();
 
-    await notify(
-      request.user,
-      "join-request",
-      `Join request ${decision}.`,
-      request._id,
-    );
+    if (decision === "cancelled") {
+      const team = await must(Team, request.team);
+      await notify(
+        team.leader,
+        "join-request",
+        `${user.name} cancelled their request to join ${team.name}.`,
+        request._id,
+        "team",
+        `join-request:${request._id}:cancelled`,
+        `/teams/${team._id}`,
+      );
+    } else {
+      await notify(
+        request.user,
+        "join-request",
+        `Your request to join the team was ${decision}.`,
+        request._id,
+        "team",
+        `join-request:${request._id}:${decision}`,
+        `/teams/${request.team}`,
+      );
+    }
 
     return request;
   });

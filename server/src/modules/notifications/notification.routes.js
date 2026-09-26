@@ -6,6 +6,8 @@ import * as validation from "./notification.validation.js";
 const router = moduleRouter();
 
 router.get("/", validate(validation.list, "query"), controller.list);
+router.get("/unread-count", controller.unreadCount);
+router.patch("/read-all", controller.readAll);
 router.patch("/:id/read", controller.read);
 
 export default router;

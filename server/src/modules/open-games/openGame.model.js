@@ -15,6 +15,7 @@ export default model(
     venue: { type: venueSchema, required: true },
     capacity: { type: Number, required: true },
     players: [ref("User")],
+    revision: { type: Number, default: 0 },
 
     status: {
       type: String,

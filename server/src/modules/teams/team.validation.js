@@ -43,3 +43,9 @@ export const transfer = z.strictObject({
 export const cover = z.strictObject({
   uploadId: id,
 });
+
+export const history = page.extend({
+  sport: id.optional(),
+  from: z.iso.date().optional(),
+  to: z.iso.date().optional(),
+}).refine((query) => !query.from || !query.to || query.from <= query.to, "The end date must be on or after the start date.");

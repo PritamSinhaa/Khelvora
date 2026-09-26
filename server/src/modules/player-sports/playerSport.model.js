@@ -26,5 +26,8 @@ export default model(
       default: "Asia/Kolkata",
     },
   },
-  [[{ user: 1, sport: 1 }, { unique: true }]],
+  [
+    [{ user: 1, sport: 1 }, { unique: true }],
+    [{ sport: 1, user: 1 }, {}],
+  ],
 );

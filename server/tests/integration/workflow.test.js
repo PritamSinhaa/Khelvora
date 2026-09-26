@@ -16,6 +16,8 @@ test("membership, leader permissions, chat and match creation", async () => {
 
     const { default: Match } =
       await import("../../src/modules/matches/match.model.js");
+    const { default: Notification } =
+      await import("../../src/modules/notifications/notification.model.js");
 
     const sport = await Sport.create({
       name: "Football",
@@ -80,6 +82,7 @@ test("membership, leader permissions, chat and match creation", async () => {
     });
 
     assert.equal(join.status, 201);
+    assert.equal(await Notification.countDocuments({ user: alpha.user.id, type: "join-request" }), 1);
 
     const joinPath = `/join-requests/${join.body.data._id}`;
 
@@ -109,6 +112,7 @@ test("membership, leader permissions, chat and match creation", async () => {
       ).status,
       409,
     );
+    assert.equal(await Notification.countDocuments({ user: member.user.id, type: "join-request" }), 1);
 
     const conversation = await Conversation.findOne({
       team: home._id,
@@ -138,6 +142,7 @@ test("membership, leader permissions, chat and match creation", async () => {
     );
 
     assert.equal(repeatedMessage.body.data._id, firstMessage.body.data._id);
+    assert.equal(await Notification.countDocuments({ user: alpha.user.id, type: "message" }), 1);
 
     assert.equal(
       (
@@ -181,6 +186,7 @@ test("membership, leader permissions, chat and match creation", async () => {
     );
 
     assert.equal(challenge.status, 201);
+    assert.equal(await Notification.countDocuments({ user: bravo.user.id, type: "challenge" }), 1);
 
     const challengePath = `/challenges/${challenge.body.data._id}`;
 
@@ -212,6 +218,8 @@ test("membership, leader permissions, chat and match creation", async () => {
     );
 
     assert.equal(await Match.countDocuments(), 1);
+    assert.equal(await Notification.countDocuments({ user: alpha.user.id, type: "match" }), 1);
+    assert.equal(await Notification.countDocuments({ user: bravo.user.id, type: "match" }), 1);
 
     await call(
       "delete",

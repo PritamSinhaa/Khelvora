@@ -11,6 +11,8 @@ import EntityName from "../../components/common/EntityName";
 
 import ScheduleControls from "./components/ScheduleControls";
 import ResultPanel from "./components/ResultPanel";
+import AvailabilityPolls from "./components/AvailabilityPolls";
+import MatchReminders from "./components/MatchReminders";
 
 const attendanceOptions = [
   ["yes", "I’m playing"],
@@ -155,6 +157,9 @@ export default function MatchDetailsPage() {
       </div>
 
       <State resource={teams} />
+
+      <AvailabilityPolls match={match} canManage={Boolean(leaderTeam)} />
+      <MatchReminders key={`${matchId}:${match.reminderRevision}`} match={match} canManage={Boolean(leaderTeam)} />
 
       <ScheduleControls
         key={matchId}

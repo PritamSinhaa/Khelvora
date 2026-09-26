@@ -15,7 +15,7 @@ export default function DiscoveryHero({ city }) {
 
       <div className="relative z-10 motion-safe:animate-enter">
         <h1 id="discovery-heading"
-          className="font-display text-[32px] leading-[0.95] font-black tracking-tight uppercase italic [text-shadow:0_2px_14px_rgba(8,20,31,0.85)] min-[380px]:text-[36px] sm:text-[54px] lg:text-[68px] xl:text-[80px]">
+          className="font-[var(--font-discovery)] text-[32px] leading-[0.95] font-black tracking-tight uppercase italic [text-shadow:0_2px_14px_rgba(8,20,31,0.85)] min-[380px]:text-[36px] sm:text-[54px] lg:text-[68px] xl:text-[80px]">
           <span className="block">Find your crew.</span>
           <span className="mt-1 block text-primary">Own the game.</span>
         </h1>
@@ -26,7 +26,7 @@ export default function DiscoveryHero({ city }) {
 
       <div aria-hidden="true"
         className="pointer-events-none absolute right-1 bottom-2 hidden -skew-x-12 border-l-2 border-primary pl-3 lg:block">
-        <p className="font-display text-xs leading-tight tracking-[0.18em] text-muted uppercase italic">
+        <p className="font-[var(--font-discovery)] text-xs leading-tight tracking-[0.18em] text-muted uppercase italic">
           {city || "Your city"}<br />plays together
         </p>
       </div>

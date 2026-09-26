@@ -8,3 +8,7 @@ export const list = respond((req) =>
 export const read = respond((req) =>
   service.read(req.user, req.params.id),
 );
+
+export const unreadCount = respond((req) => service.unreadCount(req.user));
+
+export const readAll = respond((req) => service.readAll(req.user));

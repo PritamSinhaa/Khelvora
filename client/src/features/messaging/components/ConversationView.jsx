@@ -8,6 +8,7 @@ import { Form, Field } from "../../../components/ui/Form";
 import { State, Empty, Pager } from "../../../components/ui/Feedback";
 import EntityName from "../../../components/common/EntityName";
 import ConversationTitle from "./ConversationTitle";
+import { watchConversation } from "../../../lib/socket";
 
 export default function ConversationView({ conversationId }) {
   const { user } = useAuth();
@@ -34,6 +35,11 @@ export default function ConversationView({ conversationId }) {
   );
 
   const latestId = id(ordered.at(-1));
+
+  useEffect(() => {
+    watchConversation(conversationId);
+    return () => watchConversation(null);
+  }, [conversationId]);
 
   useEffect(() => {
     if (page === 1 && follow.current && viewport.current) {

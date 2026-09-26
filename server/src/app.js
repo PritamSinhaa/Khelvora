@@ -26,6 +26,11 @@ app.use(cors(corsOptions));
 app.use(apiLimiter);
 app.use(express.json({ limit: "100kb" }));
 
+app.use("/api/v1", (_req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+  next();
+});
+
 app.use("/api/v1", routes);
 
 app.use(notFound);

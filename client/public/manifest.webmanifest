@@ -1,0 +1,15 @@
+{
+  "id": "/",
+  "name": "Khelvora - Find your crew",
+  "short_name": "Khelvora",
+  "description": "Find local teammates, build a team, and get into your next game.",
+  "start_url": "/discover",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07141e",
+  "theme_color": "#07141e",
+  "icons": [
+    { "src": "/icons/khelvora-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/khelvora-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

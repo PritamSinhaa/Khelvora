@@ -10,6 +10,10 @@ export const login = respond((req) =>
   service.login(req.validated.body),
 );
 
+export const google = respond((req) =>
+  service.loginWithGoogle(req.validated.body.credential),
+);
+
 export const logout = respond((req) =>
   service.logout(req.user),
 );

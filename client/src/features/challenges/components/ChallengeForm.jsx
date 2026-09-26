@@ -5,13 +5,18 @@ import { id, scheduleFrom } from "../../../utils/data";
 import { Form, Field } from "../../../components/ui/Form";
 import ScheduleFields from "../../../components/common/ScheduleFields";
 
+function sportId(value) {
+  const sport = value?._id ?? value?.id ?? value;
+  return sport == null ? "" : String(sport);
+}
+
 export default function ChallengeForm({ opponent, teams, userId }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   const eligible = teams.filter((team) =>
     id(team) !== id(opponent) &&
-    id(team.sport) === id(opponent.sport) &&
+    sportId(team.sport) === sportId(opponent.sport) &&
     id(opponent.leader) !== userId,
   );
 

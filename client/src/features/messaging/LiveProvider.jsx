@@ -15,7 +15,7 @@ export function LiveProvider({ children }) {
     connectLive(token, (value) => {
       if (!disposed) setConnected(value);
     }).then((socket) => {
-      if (disposed) socket.disconnect();
+      if (disposed) socket.dispose();
       else connection = socket;
     }).catch(() => {
       if (!disposed) setConnected(false);
@@ -23,7 +23,7 @@ export function LiveProvider({ children }) {
 
     return () => {
       disposed = true;
-      connection?.disconnect();
+      connection?.dispose();
       setConnected(false);
     };
   }, [token]);

@@ -2,8 +2,14 @@ import { useState } from "react";
 import { MapPin } from "lucide-react";
 import { Field } from "../ui/Form";
 import { Notice } from "../ui/Feedback";
+import { api, query } from "../../lib/api";
 
-export default function LocationFields({ location, required = true }) {
+export default function LocationFields({
+  location,
+  required = true,
+  lookupAddress = false,
+  onAddressFound,
+}) {
   const [longitude, setLongitude] = useState(location?.coordinates?.[0] ?? "");
   const [latitude, setLatitude] = useState(location?.coordinates?.[1] ?? "");
   const [error, setError] = useState("");
@@ -19,9 +25,23 @@ export default function LocationFields({ location, required = true }) {
     setError("");
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLongitude(Number(position.coords.longitude.toFixed(6)));
-        setLatitude(Number(position.coords.latitude.toFixed(6)));
+      async (position) => {
+        const nextLongitude = Number(position.coords.longitude.toFixed(6));
+        const nextLatitude = Number(position.coords.latitude.toFixed(6));
+        setLongitude(nextLongitude);
+        setLatitude(nextLatitude);
+
+        if (lookupAddress) {
+          try {
+            const address = await api.get(query("/users/me/reverse-location", {
+              lat: nextLatitude,
+              lon: nextLongitude,
+            }));
+            onAddressFound?.(address);
+          } catch (failure) {
+            setError(failure.message || "Address lookup failed. You can enter the address manually.");
+          }
+        }
         setBusy(false);
       },
       () => {
@@ -39,7 +59,7 @@ export default function LocationFields({ location, required = true }) {
         <button type="button" className="btn secondary text-xs"
           disabled={busy} onClick={locate}>
           <MapPin size={15} />
-          {busy ? "Locating…" : "Use my location"}
+          {busy ? (lookupAddress ? "Finding address…" : "Locating…") : "Use my location"}
         </button>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -55,6 +75,18 @@ export default function LocationFields({ location, required = true }) {
       <p className="text-xs leading-relaxed text-muted">
         Coordinates help players find teams and venues nearby.
       </p>
+      {lookupAddress && (
+        <p className="text-xs leading-relaxed text-muted">
+          We use Geoapify to find an address from these coordinates. Results may be approximate. {" "}
+          <a className="underline hover:text-content" href="https://www.geoapify.com/" target="_blank" rel="noreferrer">
+            Powered by Geoapify
+          </a>
+          {" · "}
+          <a className="underline hover:text-content" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">
+            © OpenStreetMap contributors
+          </a>
+        </p>
+      )}
       <Notice error>{error}</Notice>
     </div>
   );

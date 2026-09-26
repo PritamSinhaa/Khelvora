@@ -20,11 +20,14 @@ export default model(
       default: "pending",
     },
   },
-  [[
-    { team: 1, user: 1 },
-    {
-      unique: true,
-      partialFilterExpression: { status: "pending" },
-    },
-  ]],
+  [
+    [
+      { team: 1, user: 1 },
+      {
+        unique: true,
+        partialFilterExpression: { status: "pending" },
+      },
+    ],
+    [{ user: 1, status: 1, expiresAt: 1 }, {}],
+  ],
 );

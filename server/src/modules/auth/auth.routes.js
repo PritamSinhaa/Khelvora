@@ -21,6 +21,13 @@ router.post(
   controller.login,
 );
 
+router.post(
+  "/google",
+  authLimiter,
+  validate(validation.google),
+  controller.google,
+);
+
 router.post("/logout", authenticate, controller.logout);
 
 router.patch(

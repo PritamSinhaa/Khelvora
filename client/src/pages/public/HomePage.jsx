@@ -33,6 +33,7 @@ export default function HomePage() {
   const [maxDistance, setMaxDistance] = useState("10");
   const [skillLevel, setSkillLevel] = useState("all");
   const [recruitingOnly, setRecruitingOnly] = useState(false);
+  const [sort, setSort] = useState(user.location ? "distance" : "newest");
   const [page, setPage] = useState(1);
   const [appliedSearch, setAppliedSearch] = useState("");
 
@@ -63,9 +64,9 @@ export default function HomePage() {
     });
   }
 
-  const resource = useResource(
-    query(nearby ? `/discovery/${kind}` : "/teams", filters),
-  );
+  const useDiscovery = kind === "players" || nearby || sort === "recommended";
+  if (useDiscovery) filters.sort = sort === "recommended" ? "recommended" : "distance";
+  const resource = useResource(query(useDiscovery ? `/discovery/${kind}` : "/teams", filters));
 
   const items = rows(resource.data);
   const sportItems = rows(sports.data);
@@ -83,6 +84,18 @@ export default function HomePage() {
     setSearch("");
     setAppliedSearch("");
     setPage(1);
+  }
+
+  function changeMode(value) {
+    setMode(value);
+    setPage(1);
+    if (sort !== "recommended") setSort(value === "nearby" ? "distance" : "newest");
+  }
+
+  function changeKind(value) {
+    setKind(value);
+    setPage(1);
+    if (sort !== "recommended") setSort(value === "players" || mode === "nearby" ? "distance" : "newest");
   }
 
   function submitSearch(event) {
@@ -136,7 +149,7 @@ export default function HomePage() {
             <button
               type="button"
               className={`btn ${kind === "teams" ? "" : "secondary"}`}
-              onClick={() => change(setKind)("teams")}
+              onClick={() => changeKind("teams")}
             >
               Teams
             </button>
@@ -144,7 +157,7 @@ export default function HomePage() {
             <button
               type="button"
               className={`btn ${kind === "players" ? "" : "secondary"}`}
-              onClick={() => change(setKind)("players")}
+              onClick={() => changeKind("players")}
             >
               Players nearby
             </button>
@@ -157,7 +170,7 @@ export default function HomePage() {
               <select
                 value={mode}
                 onChange={(event) =>
-                  change(setMode)(event.target.value)
+                  changeMode(event.target.value)
                 }
               >
                 <option value="nearby">Near my location</option>
@@ -166,6 +179,16 @@ export default function HomePage() {
             </label>
           )}
         </div>
+
+        <label className="field w-full max-w-xs">
+          <span>Sort by</span>
+          <select value={sort} onChange={(event) => change(setSort)(event.target.value)}>
+            {nearby
+              ? <option value="distance">Nearest first</option>
+              : <option value="newest">Recently added</option>}
+            <option value="recommended">Recommended for you</option>
+          </select>
+        </label>
 
         <State resource={sports} />
 
@@ -211,16 +234,16 @@ export default function HomePage() {
             <div>
               <h2 className="text-xl font-bold sm:text-2xl">
                 {kind === "players"
-                  ? "Find your next teammate"
-                  : nearby
-                    ? "Teams near you"
-                    : "Explore teams"}
+                  ? sort === "recommended" ? "Recommended teammates" : "Find your next teammate"
+                  : sort === "recommended"
+                    ? "Recommended teams"
+                    : nearby ? "Teams near you" : "Explore teams"}
               </h2>
 
               <p className="mt-1 text-xs text-muted">
-                {nearby
-                  ? "Nearest first"
-                  : "Recently created teams"}
+                {sort === "recommended"
+                  ? "Ranked by sport, distance, skill, and availability"
+                  : nearby ? "Nearest first" : "Recently created teams"}
               </p>
             </div>
 
@@ -240,9 +263,7 @@ export default function HomePage() {
             resource.data &&
             (kind === "teams" ? (
               <TeamGrid
-                teams={items.map((team) =>
-                  teamView(team, sportItems),
-                )}
+                teams={items.map((team) => teamView(team, sportItems))}
               />
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
@@ -291,10 +312,18 @@ export default function HomePage() {
 
                       <p className="text-xs text-primary">
                         {distance !== null
-                          ? `${distance} km away · `
+                          ? `${player.distanceApproximate ? "About " : ""}${distance} km away · `
                           : ""}
                         View profile →
                       </p>
+
+                      {player.recommendationReasons?.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {player.recommendationReasons.map((reason) => (
+                            <span key={reason} className="badge">{reason}</span>
+                          ))}
+                        </div>
+                      )}
                     </Link>
                   );
                 })}
@@ -311,6 +340,7 @@ export default function HomePage() {
             page={page}
             setPage={setPage}
             count={items.length}
+            hasNext={Number.isFinite(resource.data?.total) ? page * resource.data.limit < resource.data.total : items.length >= 20}
             loading={resource.loading}
           />
         </section>

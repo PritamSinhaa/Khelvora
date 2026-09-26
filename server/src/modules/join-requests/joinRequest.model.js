@@ -21,5 +21,6 @@ export default model(
         partialFilterExpression: { status: "pending" },
       },
     ],
+    [{ team: 1, status: 1, createdAt: 1 }, {}],
   ],
 );

@@ -3,20 +3,12 @@ import { Link, Navigate, useLocation } from "react-router";
 import { useAuth } from "../../features/auth/useAuth";
 import { Field, Form } from "../../components/ui/Form";
 import { Notice } from "../../components/ui/Feedback";
+import GoogleSignIn from "../../features/auth/GoogleSignIn";
 
 export default function AuthPage({ register = false }) {
   const auth = useAuth();
   const location = useLocation();
-  const from = location.state?.from;
-
-  const destination = register
-    ? "/onboarding"
-    : typeof from === "string" &&
-        from.startsWith("/") &&
-        !from.startsWith("//") &&
-        !/^\/(login|register)/.test(from)
-      ? from
-      : "/discover";
+  const destination = register ? "/onboarding" : "/discover";
 
   if (auth.token) {
     return <Navigate to={destination} replace />;
@@ -97,6 +89,13 @@ export default function AuthPage({ register = false }) {
           hint={register ? "At least 10 characters." : undefined}
         />
       </Form>
+
+      <div className="row text-xs text-muted" aria-hidden="true">
+        <span className="h-px flex-1 bg-border" />
+        <span>or continue with</span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+      <GoogleSignIn />
 
       <p className="text-sm text-muted">
         {register ? "Already part of the crew?" : "New around here?"}{" "}

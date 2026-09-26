@@ -50,6 +50,8 @@ const SettingsPage = lazy(
 const ReportsPage = lazy(
   () => import("../pages/admin/ReportsPage"),
 );
+const TeamLeaderboardPage = lazy(() => import("../pages/statistics/TeamLeaderboardPage"));
+const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
 
 export default function AppRoutes() {
   return (
@@ -69,6 +71,7 @@ export default function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route index element={<Navigate to="/discover" replace />} />
+            <Route path="dashboard" element={<DashboardPage />} />
             <Route path="discover" element={<HomePage />} />
 
             <Route path="teams" element={<TeamsPage />} />
@@ -77,6 +80,7 @@ export default function AppRoutes() {
             <Route path="teams/:teamId/edit" element={<TeamEditorPage />} />
 
             <Route path="matches" element={<MatchesPage />} />
+            <Route path="leaderboards" element={<TeamLeaderboardPage />} />
             <Route
               path="matches/:matchId"
               element={<MatchDetailsPage />}

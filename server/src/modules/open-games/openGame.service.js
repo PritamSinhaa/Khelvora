@@ -1,17 +1,30 @@
 import OpenGame from "./openGame.model.js";
-
-import {
-  sportExists,
-  must,
-  same,
-  ensureUnblocked,
-} from "../../services/access.service.js";
+import { sportExists } from "../../services/access.service.js";
 
 import { future } from "../../services/matchAccess.service.js";
-import AppError from "../../utils/AppError.js";
+import * as waitlist from "./waitlist.service.js";
 
-export const list = (query) =>
-  OpenGame.find({
+export async function nearby(user) {
+  if (!user.location?.coordinates) return { items: [], total: 0, radiusKm: 25 };
+  const now = new Date();
+  const candidates = await OpenGame.aggregate([
+    { $geoNear: {
+      near: user.location,
+      distanceField: "distanceMeters",
+      maxDistance: 25000,
+      spherical: true,
+      query: { status: "open", startsAt: { $gt: now } },
+    } },
+    { $limit: 30 },
+  ]);
+  const available = (await waitlist.listState(candidates, user))
+    .filter((game) => game.remainingPlaces > 0)
+    .slice(0, 6);
+  return { items: available, total: available.length, radiusKm: 25 };
+}
+
+export async function list(user, query) {
+  const games = await OpenGame.find({
     status: "open",
     startsAt: { $gt: new Date() },
     ...(query.sport ? { sport: query.sport } : {}),
@@ -19,6 +32,8 @@ export const list = (query) =>
     .sort({ startsAt: 1 })
     .skip((query.page - 1) * query.limit)
     .limit(query.limit);
+  return waitlist.listState(games, user);
+}
 
 export async function create(user, data) {
   await sportExists(data.sport);
@@ -34,75 +49,12 @@ export async function create(user, data) {
   });
 }
 
-export async function join(user, id) {
-  const game = await must(OpenGame, id);
+export const join = waitlist.join;
+export const joinWaitlist = waitlist.joinWaitlist;
+export const leaveWaitlist = waitlist.leaveWaitlist;
+export const acceptOffer = waitlist.acceptOffer;
+export const declineOffer = waitlist.declineOffer;
 
-  await ensureUnblocked(user._id, game.host);
+export const leave = waitlist.leaveGame;
 
-  const updated = await OpenGame.findOneAndUpdate(
-    {
-      _id: id,
-      status: "open",
-      startsAt: { $gt: new Date() },
-      players: { $ne: user._id },
-
-      $expr: {
-        $lt: [{ $size: "$players" }, "$capacity"],
-      },
-    },
-    { $addToSet: { players: user._id } },
-    { new: true },
-  );
-
-  if (!updated) {
-    throw new AppError(
-      "Game is full, closed, or you already joined.",
-      409,
-    );
-  }
-
-  return updated;
-}
-
-export async function leave(user, id) {
-  const game = await must(OpenGame, id);
-
-  if (same(game.host, user._id)) {
-    throw new AppError(
-      "The host must cancel instead of leaving.",
-      409,
-    );
-  }
-
-  if (game.startsAt <= new Date()) {
-    throw new AppError("Game has already started.", 409);
-  }
-
-  return OpenGame.findByIdAndUpdate(
-    id,
-    { $pull: { players: user._id } },
-    { new: true },
-  );
-}
-
-export async function cancel(user, id) {
-  const game = await OpenGame.findOneAndUpdate(
-    {
-      _id: id,
-      host: user._id,
-      status: "open",
-      startsAt: { $gt: new Date() },
-    },
-    { $set: { status: "cancelled" } },
-    { new: true },
-  );
-
-  if (!game) {
-    throw new AppError(
-      "Only the host can cancel a future open game.",
-      403,
-    );
-  }
-
-  return game;
-}
+export const cancel = waitlist.cancelGame;

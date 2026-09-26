@@ -21,6 +21,7 @@ import {
 
 import { notify } from "../notifications/notification.service.js";
 import AppError from "../../utils/AppError.js";
+import { replaceReminders } from "../matches/reminder.service.js";
 
 export const create = (user, data) =>
   tx(async () => {
@@ -100,6 +101,9 @@ export const create = (user, data) =>
       "challenge",
       `${from.name} challenged your team to a match.`,
       challenge._id,
+      "challenge",
+      `challenge:${challenge._id}:created`,
+      "/challenges",
     );
 
     return challenge;
@@ -196,7 +200,10 @@ export const decide = (user, id, decision) =>
         startsAt: challenge.startsAt,
         endsAt: challenge.endsAt,
         venue: challenge.venue,
+        homeRosterUserIds: await Membership.find({ team: from._id }).distinct("user"),
+        awayRosterUserIds: await Membership.find({ team: to._id }).distinct("user"),
       });
+      await replaceReminders(match);
 
       await Conversation.create({
         kind: "match",
@@ -210,6 +217,9 @@ export const decide = (user, id, decision) =>
           "match",
           `${from.name} vs ${to.name} has been scheduled.`,
           match._id,
+          "match",
+          `match:${match._id}:scheduled:${recipient}`,
+          `/matches/${match._id}`,
         );
       }
     } else {
@@ -220,6 +230,9 @@ export const decide = (user, id, decision) =>
         "challenge",
         `Challenge ${decision}.`,
         challenge._id,
+        "challenge",
+        `challenge:${challenge._id}:${decision}`,
+        "/challenges",
       );
     }
 

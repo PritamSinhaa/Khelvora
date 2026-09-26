@@ -58,7 +58,7 @@ export function PageHeader({ title, eyebrow, description, children }) {
   );
 }
 
-export function Pager({ page, setPage, count, limit = 20, loading = false }) {
+export function Pager({ page, setPage, count, limit = 20, loading = false, hasNext = count >= limit }) {
   if (page === 1 && count < limit) return null;
 
   return (
@@ -68,7 +68,7 @@ export function Pager({ page, setPage, count, limit = 20, loading = false }) {
         Previous
       </button>
       <span className="text-xs text-muted">Page {page}</span>
-      <button className="btn secondary" disabled={count < limit || loading}
+      <button className="btn secondary" disabled={!hasNext || loading}
         onClick={() => setPage((value) => value + 1)}>
         Next
       </button>

@@ -9,8 +9,8 @@ export default function Logo({ className = "" }) {
         <circle cx="8" cy="36" r="4.5" />
         <path d="M22 3h12l-2 10-8 8 7 10h5l-2 10H23L14 26l-3-1 2-12h6z" />
       </svg>
-      <span className="font-sans text-[25px] leading-none font-bold tracking-[-1px] text-content sm:text-[28px]">
-        MatchUp
+      <span className="font-display text-[27px] leading-none font-black tracking-wide text-content sm:text-[30px]">
+        Khelvora
       </span>
     </span>
   );

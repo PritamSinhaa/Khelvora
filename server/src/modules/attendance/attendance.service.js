@@ -22,9 +22,12 @@ export const save = (user, data) => tx(async () => {
     throw new AppError("Attendance is closed.", 409);
   }
 
+  const teams = await Membership.find({ user: user._id, team: { $in: [match.homeTeam, match.awayTeam] } }).distinct("team");
+  const teamAtResponse = teams.length === 1 ? teams[0] : null;
+
   return Attendance.findOneAndUpdate(
     { match: match._id, user: user._id },
-    { $set: { response: data.response } },
+    { $set: { response: data.response, teamAtResponse } },
     { upsert: true, new: true },
   );
 });

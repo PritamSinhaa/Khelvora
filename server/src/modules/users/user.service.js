@@ -4,6 +4,8 @@ import {
   ensureUnblocked,
 } from "../../services/access.service.js";
 import { accountView } from "../auth/auth.service.js";
+import { reverseGeocode } from "../../services/reverseGeocode.service.js";
+import { playerHistory } from "../statistics/statistics.service.js";
 
 export async function me(user) {
   return {
@@ -38,3 +40,6 @@ export async function profile(user, id) {
     city: record.city,
   };
 }
+
+export const lookupLocation = ({ lat, lon }) => reverseGeocode(lat, lon);
+export const matchHistory = (user, query) => playerHistory(user._id, query);

@@ -66,6 +66,9 @@ export const create = (user, data) =>
       "invitation",
       `You were invited to ${team.name}.`,
       invite._id,
+      "invitation",
+      `invitation:${invite._id}:created`,
+      `/teams?invitation=${invite._id}`,
     );
 
     return invite;
@@ -137,6 +140,13 @@ export const decide = (user, id, decision) =>
 
     invite.status = decision;
     await invite.save();
+
+    const team = await must(Team, invite.team);
+    if (decision !== "cancelled") {
+      await notify(invite.invitedBy, "invitation", `${user.name} ${decision} your invitation to ${team.name}.`, invite._id, "team", `invitation:${invite._id}:${decision}`, `/teams/${team._id}`);
+    } else {
+      await notify(invite.user, "invitation", `${team.name} withdrew your team invitation.`, invite._id, "team", `invitation:${invite._id}:cancelled`, `/teams/${team._id}`);
+    }
 
     return invite;
   });

@@ -90,7 +90,7 @@ export function readConfig(env = process.env) {
   const config = {
     version: VERSION,
     batch: env.DEMO_BATCH || "demo-v1",
-    users: number("DEMO_USERS", 1000, 144, 50000),
+    users: number("DEMO_USERS", 1000, MEMBERS, 50000),
     teams: number("DEMO_TEAMS", 100, 18, 5000),
     matches: number("DEMO_MATCHES", 200, 0, 20000),
     games: number("DEMO_GAMES", 100, 0, 20000),
@@ -104,10 +104,6 @@ export function readConfig(env = process.env) {
     throw new Error(
       "DEMO_BATCH: use 1–24 lowercase letters, digits or hyphens.",
     );
-  }
-
-  if (config.teams * MEMBERS > config.users) {
-    throw new Error("DEMO_USERS must be at least DEMO_TEAMS × 8.");
   }
 
   if (config.teams < sportSeeds.length * 2) {
@@ -254,9 +250,11 @@ export function buildDataset(
 
   // Teams, memberships and team conversations
   const teams = Array.from({ length: config.teams }, (_, index) => {
-    const members = users
-      .slice(index * MEMBERS, (index + 1) * MEMBERS)
-      .map((user) => user._id);
+    const firstMember = (index * MEMBERS) % users.length;
+    const members = Array.from(
+      { length: MEMBERS },
+      (_, position) => users[(firstMember + position) % users.length]._id,
+    );
 
     const team = add(Team, {
       _id: id("team", index),
@@ -303,7 +301,8 @@ export function buildDataset(
     teams.find(
       (candidate) =>
         String(candidate.sport) === String(team.sport) &&
-        String(candidate._id) !== String(team._id),
+        String(candidate._id) !== String(team._id) &&
+        String(candidate.leader) !== String(team.leader),
     );
 
   // One pending challenge per team.
@@ -367,10 +366,10 @@ export function buildDataset(
       status: completed ? "completed" : "scheduled",
     });
 
-    const members = [
+    const members = [...new Map([
       ...membersByTeam.get(String(home._id)),
       ...membersByTeam.get(String(away._id)),
-    ];
+    ].map((user) => [String(user), user])).values()];
 
     members.forEach((user, position) =>
       add(Attendance, {

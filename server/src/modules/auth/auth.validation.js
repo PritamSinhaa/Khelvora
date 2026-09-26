@@ -24,3 +24,7 @@ export const changePassword = z.strictObject({
   currentPassword: z.string().min(1).max(200),
   newPassword: password,
 });
+
+export const google = z.strictObject({
+  credential: z.string().min(1).max(10000),
+});

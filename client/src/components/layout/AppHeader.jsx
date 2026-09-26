@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router";
 import Logo from "../common/Logo";
 import ProfileSection from "./ProfileSection";
 import TeamSearch from "../../features/discovery/components/TeamSearch";
+import { useResource } from "../../hooks/useResource";
 
 export default function AppHeader({
   search,
@@ -12,16 +13,17 @@ export default function AppHeader({
 }) {
   const { pathname } = useLocation();
   const isDiscoveryPage = pathname === "/discover";
+  const unread = useResource("/notifications/unread-count");
 
   const locationLabel =
     user?.city || "Set your location in your profile";
 
   return (
-    <header className="sticky top-0 z-30 bg-background lg:border-b lg:border-border">
+    <header className="sticky top-0 z-30 border-b border-border bg-background">
       <div className="flex h-20 items-center gap-6 px-4 sm:px-6 lg:px-8">
         <Link
           to="/discover"
-          aria-label="Khelvora discovery"
+          aria-label="Gameblitz discovery"
           className="shrink-0 lg:hidden"
         >
           <Logo />
@@ -52,13 +54,18 @@ export default function AppHeader({
           <Link
             to="/notifications"
             aria-label="Notifications"
-            className="hidden size-11 items-center justify-center rounded-xl hover:bg-surface-hover hover:text-primary motion-safe:transition-colors lg:flex"
+            className="relative hidden size-11 items-center justify-center rounded-xl hover:bg-surface-hover hover:text-primary motion-safe:transition-colors lg:flex"
           >
             <Bell
               size={23}
               strokeWidth={1.6}
               aria-hidden="true"
             />
+            {Number(unread.data) > 0 && (
+              <span className="absolute right-0.5 top-0.5 grid min-h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-background" aria-label={`${unread.data} unread notifications`}>
+                {unread.data > 99 ? "99+" : unread.data}
+              </span>
+            )}
           </Link>
 
           <div className="lg:hidden">

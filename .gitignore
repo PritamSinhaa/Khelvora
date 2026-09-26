@@ -1,0 +1,19 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Dependencies and generated output
+node_modules/
+**/node_modules/
+**/.npm-cache*/
+dist/
+**/dist/
+coverage/
+.deployment-validation/
+
+# Local archives
+*.zip

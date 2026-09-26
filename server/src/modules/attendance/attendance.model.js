@@ -5,6 +5,7 @@ export default model(
   {
     match: ref("Match"),
     user: ref("User"),
+    teamAtResponse: { ...ref("Team", false), default: null },
 
     response: {
       type: String,
@@ -12,5 +13,5 @@ export default model(
       required: true,
     },
   },
-  [[{ match: 1, user: 1 }, { unique: true }]],
+  [[{ match: 1, user: 1 }, { unique: true }], [{ user: 1, match: 1, response: 1 }, {}]],
 );

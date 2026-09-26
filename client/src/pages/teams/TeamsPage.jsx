@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router";
 import { Plus } from "lucide-react";
 import { api, query } from "../../lib/api";
 import { id, rows, teamView, dateTime } from "../../utils/data";
@@ -10,6 +10,7 @@ import TeamGrid from "../../features/teams/components/TeamGrid";
 import EntityName from "../../components/common/EntityName";
 
 export default function TeamsPage() {
+  const [searchParams] = useSearchParams();
   const [invitePage, setInvitePage] = useState(1);
   const [requestPage, setRequestPage] = useState(1);
 
@@ -22,6 +23,12 @@ export default function TeamsPage() {
     query("/join-requests", { page: requestPage, limit: 20 }),
     { interval: 30000 },
   );
+
+  useEffect(() => {
+    const inviteId = searchParams.get("invitation");
+    if (!inviteId || !invitations.data) return;
+    document.getElementById(`invitation-${inviteId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [searchParams, invitations.data]);
 
   return (
     <div className="stack">
@@ -57,7 +64,7 @@ export default function TeamsPage() {
             const expired = new Date(invite.expiresAt) <= new Date();
 
             return (
-              <article className="list-item" key={id(invite)}>
+              <article id={`invitation-${id(invite)}`} className={`list-item ${searchParams.get("invitation") === id(invite) ? "border-primary/60 bg-primary/5" : ""}`} key={id(invite)}>
                 <div>
                   <Link
                     className="font-bold hover:text-primary"

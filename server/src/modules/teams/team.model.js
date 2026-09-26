@@ -30,5 +30,6 @@ export default model(
   [
     [{ location: "2dsphere" }, {}],
     [{ sport: 1, lookingForPlayers: 1 }, {}],
+    [{ sport: 1, city: 1 }, {}],
   ],
 );

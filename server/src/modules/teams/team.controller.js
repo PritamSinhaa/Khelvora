@@ -21,6 +21,7 @@ export const transfer = respond((req) =>
 );
 
 export const stats = respond((req) => service.stats(req.params.id));
+export const history = respond((req) => service.history(req.params.id, req.validated.query));
 
 export const setCover = respond((req) =>
   service.setCover(

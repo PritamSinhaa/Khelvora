@@ -18,7 +18,10 @@ export function setupSockets(server) {
     socket.join(`user:${socket.data.user.id}`);
 
     const timer = setTimeout(
-      () => socket.disconnect(true),
+      () => {
+        socket.emit("auth:expired");
+        socket.disconnect(true);
+      },
       Math.max(1, socket.data.expiresAt - Date.now()),
     );
 
@@ -38,4 +41,10 @@ export function emitUser(id, event, data) {
 
 export function disconnectUser(id) {
   io?.in(`user:${id}`).disconnectSockets(true);
+}
+
+export async function viewersOfConversation(conversationId) {
+  if (!io) return new Set();
+  const sockets = await io.in(`conversation:${conversationId}`).fetchSockets();
+  return new Set(sockets.map((socket) => String(socket.data.user?.id)));
 }

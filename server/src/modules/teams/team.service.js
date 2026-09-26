@@ -1,8 +1,6 @@
 import Team from "./team.model.js";
 import Membership from "../memberships/membership.model.js";
 import Conversation from "../conversations/conversation.model.js";
-import Result from "../results/result.model.js";
-import Match from "../matches/match.model.js";
 import Upload from "../uploads/upload.model.js";
 
 import {
@@ -21,6 +19,7 @@ import {
 } from "../../utils/http.js";
 
 import AppError from "../../utils/AppError.js";
+import { teamStats, teamHistory } from "../statistics/statistics.service.js";
 
 export function list(query) {
   const filter = {
@@ -32,6 +31,7 @@ export function list(query) {
 
   return Team.find(filter)
     .populate("sport")
+    .select("-location")
     .sort({ _id: -1 })
     .skip(pageOptions(query).skip)
     .limit(query.limit);
@@ -104,41 +104,8 @@ export const transfer = (user, id, target) => tx(async () => {
   return team;
 });
 
-export async function stats(id) {
-  await must(Team, id);
-
-  const matches = await Match.find({
-    $or: [{ homeTeam: id }, { awayTeam: id }],
-    status: "completed",
-  });
-
-  const results = await Result.find({
-    match: { $in: matches.map((match) => match._id) },
-    status: "confirmed",
-  });
-
-  const byMatch = new Map(
-    matches.map((match) => [match.id, match]),
-  );
-
-  let wins = 0;
-  let draws = 0;
-  let losses = 0;
-
-  for (const result of results) {
-    const match = byMatch.get(String(result.match));
-    const home = String(match.homeTeam) === id;
-
-    const own = home ? result.homeScore : result.awayScore;
-    const other = home ? result.awayScore : result.homeScore;
-
-    if (own > other) wins++;
-    else if (own === other) draws++;
-    else losses++;
-  }
-
-  return { played: results.length, wins, draws, losses };
-}
+export const stats = teamStats;
+export const history = teamHistory;
 export const setCover = (user, teamId, uploadId) =>
   tx(async () => {
     await lockTeams([teamId]);

@@ -7,6 +7,8 @@ import { tx, lockTeams, must } from "../../services/access.service.js";
 
 import { emitUser } from "../../sockets/index.js";
 import { logger } from "../../utils/logger.js";
+import { notify } from "../notifications/notification.service.js";
+import { viewersOfConversation } from "../../sockets/index.js";
 import AppError from "../../utils/AppError.js";
 
 export async function list(user, query) {
@@ -90,11 +92,31 @@ export async function send(user, data) {
     }
   }
 
+  // Persist unread updates after the message transaction commits. A retry
+  // reuses the same message ID and therefore the same notification key.
+  const conversation = await access(data.conversationId, user._id);
+  const recipientsList = await recipients(conversation);
+  const activeViewers = await viewersOfConversation(conversation._id);
+  for (const recipient of recipientsList) {
+    if (
+      String(recipient) !== String(user._id) &&
+      !activeViewers.has(String(recipient))
+    ) {
+      await notify(
+        recipient,
+        "message",
+        "You have a new message.",
+        conversation._id,
+        "conversation",
+        `message:${message._id}:${recipient}`,
+        `/messages/${conversation._id}`,
+      );
+    }
+  }
+
   // Send realtime events only after the transaction commits.
   try {
-    const conversation = await access(data.conversationId, user._id);
-
-    for (const recipient of await recipients(conversation)) {
+    for (const recipient of recipientsList) {
       emitUser(recipient, "message:new", message.toJSON());
     }
   } catch (error) {

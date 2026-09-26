@@ -12,7 +12,7 @@ export default function AppLayout() {
   const [search, setSearch] = useState("");
 
   return (
-    <div className="min-h-dvh w-full bg-background lg:grid lg:grid-cols-[208px_minmax(0,1fr)]">
+    <div className="min-h-dvh w-full bg-transparent lg:grid lg:grid-cols-[232px_minmax(0,1fr)]">
       <a
         href="#main-content"
         className="sr-only z-50 rounded-lg bg-primary px-4 py-3 font-semibold text-background focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
@@ -20,18 +20,18 @@ export default function AppLayout() {
         Skip to content
       </a>
 
-      <aside className="hidden border-r border-border lg:block">
+      <aside className="hidden border-r border-border bg-surface/35 lg:block">
         <div className="sticky top-0 flex h-dvh flex-col">
           <div className="flex h-24 shrink-0 items-center px-5">
             <Link
               to="/discover"
-              aria-label="Khelvora discovery"
+              aria-label="Gameblitz discovery"
             >
               <Logo />
             </Link>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+          <div className="sidebar-navigation min-h-0 flex-1 overflow-y-auto px-3 py-3">
             <AppNavigation />
           </div>
 
@@ -51,13 +51,15 @@ export default function AppLayout() {
         <main
           id="main-content"
           tabIndex={-1}
-          className="min-w-0 px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-6 lg:px-7 lg:pb-8"
+          className="min-w-0 px-4 pt-5 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-7 lg:px-8 lg:pt-8 lg:pb-10"
         >
-          <Outlet context={{ search, setSearch }} />
+          <div className="mx-auto w-full max-w-[1600px]">
+            <Outlet context={{ search, setSearch }} />
+          </div>
         </main>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-2 pt-1 pb-[calc(0.25rem+env(safe-area-inset-bottom))] backdrop-blur-xl lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background px-2 pt-1 pb-[calc(0.25rem+env(safe-area-inset-bottom))] lg:hidden">
         <AppNavigation variant="mobile" />
       </div>
     </div>

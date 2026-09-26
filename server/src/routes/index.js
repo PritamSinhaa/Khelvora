@@ -11,6 +11,7 @@ import joinRequestRoutes from "../modules/join-requests/joinRequest.routes.js";
 import invitationRoutes from "../modules/invitations/invitation.routes.js";
 import challengeRoutes from "../modules/challenges/challenge.routes.js";
 import matchRoutes from "../modules/matches/match.routes.js";
+import availabilityPollRoutes from "../modules/matches/availabilityPoll.routes.js";
 import resultRoutes from "../modules/results/result.routes.js";
 import conversationRoutes from "../modules/conversations/conversation.routes.js";
 import messageRoutes from "../modules/messages/message.routes.js";
@@ -21,6 +22,8 @@ import discoveryRoutes from "../modules/discovery/discovery.routes.js";
 import blockRoutes from "../modules/blocks/block.routes.js";
 import reportRoutes from "../modules/reports/report.routes.js";
 import uploadRoutes from "../modules/uploads/upload.routes.js";
+import statisticsRoutes from "../modules/statistics/statistics.routes.js";
+import dashboardRoutes from "../modules/dashboard/dashboard.routes.js";
 
 const router = Router();
 
@@ -49,6 +52,7 @@ router.use("/join-requests", joinRequestRoutes);
 router.use("/invitations", invitationRoutes);
 router.use("/challenges", challengeRoutes);
 router.use("/matches", matchRoutes);
+router.use("/availability-polls", availabilityPollRoutes);
 router.use("/results", resultRoutes);
 router.use("/conversations", conversationRoutes);
 router.use("/messages", messageRoutes);
@@ -59,5 +63,7 @@ router.use("/discovery", discoveryRoutes);
 router.use("/blocks", blockRoutes);
 router.use("/reports", reportRoutes);
 router.use("/uploads", uploadRoutes);
+router.use("/statistics", statisticsRoutes);
+router.use("/dashboard", dashboardRoutes);
 
 export default router;

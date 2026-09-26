@@ -15,7 +15,8 @@
   --color-content: #f5f7ff;
   --color-muted: #a5b8d0;
   --font-sans: "Roboto", sans-serif;
-  --font-display: "Barlow Condensed", Impact, sans-serif;
+  --font-display: "Roboto", sans-serif;
+  --font-discovery: "Barlow Condensed", Impact, sans-serif;
   --animate-enter: enter 500ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
 
   @keyframes enter {
@@ -71,12 +72,19 @@
   .row { @apply flex flex-wrap items-center gap-3; }
   .between { @apply flex flex-wrap items-center justify-between gap-3; }
 
+  .sidebar-navigation {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .sidebar-navigation::-webkit-scrollbar { display: none; }
+
   .panel {
-    @apply rounded-2xl border border-border bg-surface p-5 sm:p-6;
+    @apply rounded-xl border border-border bg-surface p-5 sm:p-6;
   }
 
   .page-title {
-    @apply font-display text-4xl font-bold uppercase tracking-wide sm:text-5xl;
+    @apply text-3xl font-bold tracking-tight sm:text-4xl;
   }
 
   .section-title { @apply text-lg font-bold tracking-tight; }
@@ -87,9 +95,13 @@
 
   .btn {
     @apply inline-flex min-h-11 shrink-0 items-center justify-center gap-2
-      rounded-xl border border-transparent bg-primary px-4 py-2.5 text-sm
-      font-bold text-background transition-colors hover:bg-primary-hover
+      rounded-lg border border-transparent bg-primary px-4 py-2.5 text-sm
+      font-semibold text-background transition-colors hover:bg-primary-hover
       disabled:opacity-45;
+  }
+
+  .btn:not(:disabled):active {
+    transform: translateY(1px);
   }
 
   .btn.secondary {
@@ -102,8 +114,8 @@
   }
 
   .badge {
-    @apply inline-flex w-fit items-center rounded-lg border border-primary/20
-      bg-primary/10 px-2.5 py-1 text-[11px] font-semibold capitalize text-primary;
+    @apply inline-flex w-fit items-center rounded-md border border-border
+      bg-surface-hover px-2.5 py-1 text-xs font-medium capitalize text-content;
   }
 
   .field { @apply flex min-w-0 flex-col gap-2 text-sm font-medium; }
@@ -111,9 +123,18 @@
   .field input:not([type="checkbox"]),
   .field select,
   .field textarea {
-    @apply min-h-11 w-full min-w-0 rounded-xl border border-border bg-background
+      @apply min-h-11 w-full min-w-0 rounded-lg border border-border bg-background
       px-3 py-2.5 text-sm font-normal text-content placeholder:text-muted/60
       focus:border-primary/70;
+    transition: border-color 160ms ease, background-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .field input:not([type="checkbox"]):focus,
+  .field select:focus,
+  .field textarea:focus {
+    background-color: rgb(8 20 31 / 92%);
+      box-shadow: 0 0 0 2px rgb(198 255 54 / 12%);
   }
 
   .field textarea { @apply min-h-24 resize-y; }

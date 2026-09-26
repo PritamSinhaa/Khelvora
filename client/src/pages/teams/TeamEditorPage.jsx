@@ -6,6 +6,7 @@ import { useAuth } from "../../features/auth/useAuth";
 import { State, PageHeader, Notice } from "../../components/ui/Feedback";
 import { Form, Field } from "../../components/ui/Form";
 import LocationFields from "../../components/common/LocationFields";
+import TeamCoverEditor from "../../features/teams/components/TeamCoverEditor";
 
 export default function TeamEditorPage() {
   const { teamId } = useParams();
@@ -36,7 +37,13 @@ export default function TeamEditorPage() {
         eyebrow="Team setup"
         description="Give your team a home, a sport, and a reason to play."
       />
-
+      {team && (
+        <TeamCoverEditor
+          key={teamId}
+          team={team}
+          onSaved={() => resource.reload()}
+        />
+      )}
       <section className="panel">
         <Form
           key={teamId || "new"}
