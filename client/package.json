@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "verify:pwa": "npm run build && node scripts/verify-pwa.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },
