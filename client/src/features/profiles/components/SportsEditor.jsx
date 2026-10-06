@@ -14,6 +14,7 @@ const days = [
   "Friday",
   "Saturday",
 ];
+const OTHER_SPORT = "__other__";
 
 export default function SportsEditor() {
   const sports = useResource("/sports");
@@ -21,6 +22,7 @@ export default function SportsEditor() {
   const task = useTask();
 
   const [sport, setSport] = useState("");
+  const [customSportName, setCustomSportName] = useState("");
   const [skill, setSkill] = useState("Intermediate");
   const [positions, setPositions] = useState("");
   const [timeZone, setTimeZone] = useState(
@@ -36,6 +38,7 @@ export default function SportsEditor() {
 
   function edit(preference) {
     setSport(id(preference.sport));
+    setCustomSportName("");
     setSkill(preference.skillLevel);
     setPositions(preference.positions.join(", "));
     setTimeZone(preference.timeZone);
@@ -132,6 +135,7 @@ export default function SportsEditor() {
 
             await api.put("/player-sports", {
               sport,
+              ...(sport === OTHER_SPORT ? { sportName: customSportName.trim() } : {}),
               skillLevel: skill,
               positions: list,
               availability: slots.map((slot) => ({
@@ -165,8 +169,23 @@ export default function SportsEditor() {
                     {item.name}
                   </option>
                 ))}
+                <option value={OTHER_SPORT}>Others</option>
               </select>
             </Field>
+
+            {sport === OTHER_SPORT && (
+              <Field
+                label="Sport name"
+                required
+                maxLength={60}
+                value={customSportName}
+                onChange={(event) => {
+                  setCustomSportName(event.target.value);
+                  setSaved(false);
+                }}
+                placeholder="e.g. Pickleball"
+              />
+            )}
 
             <Field label="Skill level">
               <select

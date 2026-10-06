@@ -23,7 +23,7 @@ export default function MessagesPage() {
   const target = useConversationTarget(params.get("team"), params.get("match"));
 
   return (
-    <div className="stack">
+    <div className="stack lg:h-[calc(100dvh-192px)] lg:min-h-0 lg:overflow-hidden">
       <PageHeader
         title="The team talk"
         eyebrow="Messages"
@@ -41,8 +41,8 @@ export default function MessagesPage() {
 
       <State resource={target} />
 
-      <div className="grid items-start gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="panel min-w-0 stack">
+      <div className="grid items-start gap-5 lg:min-h-0 lg:flex-1 lg:grid-rows-1 lg:grid-cols-[280px_minmax(0,1fr)] lg:overflow-hidden">
+        <aside className="panel min-w-0 stack lg:h-full lg:min-h-0 lg:gap-3 lg:overflow-hidden">
           <div className="between">
             <h2 className="section-title">Chats</h2>
             <Link to="/discover" className="text-xs font-bold text-primary">
@@ -52,7 +52,7 @@ export default function MessagesPage() {
 
           <State resource={conversations} />
 
-          <div className="flex gap-3 overflow-x-auto lg:flex-col">
+          <div className="flex gap-3 overflow-x-auto lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:overscroll-contain">
             {rows(conversations.data).map((conversation) => (
               <Link
                 key={id(conversation)}

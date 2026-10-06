@@ -5,7 +5,8 @@ import { skillLevels } from "../../constants/sports.js";
 const clock = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 
 export const save = z.strictObject({
-  sport: id,
+  sport: z.union([id, z.literal("__other__")]),
+  sportName: z.string().trim().max(60).optional(),
   skillLevel: z.enum(skillLevels),
 
   positions: z.array(
@@ -31,4 +32,7 @@ export const save = z.strictObject({
       return false;
     }
   }, "Invalid timezone").default("Asia/Kolkata"),
-});
+}).refine(
+  (value) => value.sport !== "__other__" || Boolean(value.sportName?.trim()),
+  { message: "Enter the name of your sport.", path: ["sportName"] },
+);

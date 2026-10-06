@@ -48,7 +48,7 @@ export default function ConversationView({ conversationId }) {
   }, [latestId, page]);
 
   return (
-    <section className="panel min-w-0 stack">
+    <section className="panel min-w-0 stack lg:h-full lg:min-h-0 lg:gap-3 lg:overflow-hidden">
       <State resource={detail} />
 
       {detail.data && (
@@ -67,7 +67,7 @@ export default function ConversationView({ conversationId }) {
       <div
         ref={viewport}
         aria-label="Messages"
-        className="flex h-[45dvh] min-h-64 flex-col gap-3 overflow-y-auto overscroll-contain pr-2"
+        className="flex h-[45dvh] min-h-64 flex-col gap-3 overflow-y-auto overscroll-contain pr-2 lg:h-auto lg:min-h-0 lg:flex-1"
         onScroll={(event) => {
           const element = event.currentTarget;
           follow.current =
@@ -169,6 +169,16 @@ export default function ConversationView({ conversationId }) {
               maxLength={2000}
               placeholder="What’s the game plan?"
               className="min-h-20!"
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" &&
+                  !event.shiftKey &&
+                  !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
             />
           </Field>
         </Form>

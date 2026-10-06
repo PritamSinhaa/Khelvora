@@ -62,19 +62,31 @@ export default function LocationFields({
           {busy ? (lookupAddress ? "Finding address…" : "Locating…") : "Use my location"}
         </button>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="Latitude" name="latitude" type="number" step="any"
-          min={-90} max={90} required={required} value={latitude}
-          onChange={(event) => setLatitude(event.target.value)}
-          placeholder="30.7046" />
-        <Field label="Longitude" name="longitude" type="number" step="any"
-          min={-180} max={180} required={required} value={longitude}
-          onChange={(event) => setLongitude(event.target.value)}
-          placeholder="76.7179" />
-      </div>
-      <p className="text-xs leading-relaxed text-muted">
-        Coordinates help players find teams and venues nearby.
-      </p>
+      {lookupAddress ? (
+        <>
+          <input type="hidden" name="latitude" value={latitude} />
+          <input type="hidden" name="longitude" value={longitude} />
+          <p className="text-xs leading-relaxed text-muted">
+            Your location will fill in the address fields above and help players find you nearby.
+          </p>
+        </>
+      ) : (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Latitude" name="latitude" type="number" step="any"
+              min={-90} max={90} required={required} value={latitude}
+              onChange={(event) => setLatitude(event.target.value)}
+              placeholder="30.7046" />
+            <Field label="Longitude" name="longitude" type="number" step="any"
+              min={-180} max={180} required={required} value={longitude}
+              onChange={(event) => setLongitude(event.target.value)}
+              placeholder="76.7179" />
+          </div>
+          <p className="text-xs leading-relaxed text-muted">
+            Coordinates help players find teams and venues nearby.
+          </p>
+        </>
+      )}
       {lookupAddress && (
         <p className="text-xs leading-relaxed text-muted">
           We use Geoapify to find an address from these coordinates. Results may be approximate. {" "}
