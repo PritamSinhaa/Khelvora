@@ -31,6 +31,9 @@ const MessagesPage = lazy(() => import("../pages/messages/MessagesPage"));
 const ProfilePage = lazy(
   () => import("../features/profiles/ProfilePage"),
 );
+const EditProfilePage = lazy(
+  () => import("../features/profiles/EditProfilePage"),
+);
 const PlayerPage = lazy(
   () => import("../features/profiles/PlayerPage"),
 );
@@ -95,6 +98,7 @@ export default function AppRoutes() {
             />
 
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="profile/edit" element={<EditProfilePage />} />
             <Route path="players/:userId" element={<PlayerPage />} />
             <Route path="onboarding" element={<OnboardingPage />} />
 

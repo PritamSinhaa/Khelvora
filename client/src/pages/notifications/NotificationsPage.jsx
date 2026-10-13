@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Bell, Check, CheckCheck } from "lucide-react";
+import { Bell, Check, CheckCheck, Trash2 } from "lucide-react";
 
 import { api, query } from "../../lib/api";
 import { useResource } from "../../hooks/useResource";
-import { PageHeader, State, Empty, Pager } from "../../components/ui/Feedback";
+import { PageHeader, State, Empty, Pager, Notice } from "../../components/ui/Feedback";
 
 const notificationLink = (item) => {
   if (typeof item.link === "string" && item.link.startsWith("/") && !item.link.startsWith("//")) return item.link;
@@ -17,9 +17,29 @@ const notificationLink = (item) => {
 export default function NotificationsPage() {
   const [page, setPage] = useState(1);
   const [unreadOnly, setUnreadOnly] = useState(false);
+  const [deletingIds, setDeletingIds] = useState(() => new Set());
+  const [deleteError, setDeleteError] = useState("");
   const resource = useResource(query("/notifications", { page, limit: 20, unread: unreadOnly ? "true" : undefined }));
   const data = resource.data || {};
   const notifications = data.items || [];
+
+  async function deleteNotification(notificationId) {
+    if (deletingIds.has(notificationId)) return;
+    setDeleteError("");
+    setDeletingIds((current) => new Set(current).add(notificationId));
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    try {
+      await api.delete(`/notifications/${notificationId}`);
+    } catch (error) {
+      setDeleteError(error.message || "Could not delete the notification.");
+      setDeletingIds((current) => {
+        const next = new Set(current);
+        next.delete(notificationId);
+        return next;
+      });
+    }
+  }
 
   return (
     <div className="mx-auto max-w-3xl stack">
@@ -41,6 +61,7 @@ export default function NotificationsPage() {
         </div>
 
         <State resource={resource} />
+        <Notice error>{deleteError}</Notice>
 
         {!resource.loading && !resource.error && notifications.length === 0 && (
           <Empty title={unreadOnly ? "You’re all caught up" : "No updates yet"}>
@@ -51,7 +72,7 @@ export default function NotificationsPage() {
 
         <div className="flex flex-col gap-3">
           {notifications.map((item) => (
-            <article key={item._id} className={`between gap-4 rounded-xl border p-4 ${item.readAt ? "border-border bg-background" : "border-primary/30 bg-primary/5"}`}>
+            <article key={item._id} className={`between gap-4 rounded-xl border p-4 transition-[opacity,transform] duration-200 ease-in ${item.readAt ? "border-border bg-background" : "border-primary/30 bg-primary/5"} ${deletingIds.has(item._id) ? "pointer-events-none translate-x-3 opacity-0" : "translate-x-0 opacity-100"}`}>
               <Link to={notificationLink(item)} className="min-w-0 flex-1 rounded-lg focus-visible:outline-primary" onClick={() => { if (!item.readAt) void api.patch(`/notifications/${item._id}/read`); }}>
                 <div className="row items-start gap-3">
                   <span className={`mt-1.5 size-2 shrink-0 rounded-full ${item.readAt ? "bg-border" : "bg-primary"}`} aria-hidden="true" />
@@ -62,10 +83,13 @@ export default function NotificationsPage() {
                 </div>
               </Link>
               {!item.readAt && (
-                <button className="btn secondary shrink-0 px-3" aria-label="Mark as read" title="Mark as read" onClick={() => api.patch(`/notifications/${item._id}/read`)}>
+                <button disabled={deletingIds.has(item._id)} className="btn secondary shrink-0 px-3" aria-label="Mark as read" title="Mark as read" onClick={() => api.patch(`/notifications/${item._id}/read`)}>
                   <Check size={16} aria-hidden="true" />
                 </button>
               )}
+              <button disabled={deletingIds.has(item._id)} className="btn danger shrink-0 px-3" aria-label="Delete notification" title="Delete notification" onClick={() => deleteNotification(item._id)}>
+                <Trash2 size={16} aria-hidden="true" />
+              </button>
             </article>
           ))}
         </div>

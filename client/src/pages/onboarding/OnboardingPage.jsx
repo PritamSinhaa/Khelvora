@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import ProfilePage from "../../features/profiles/ProfilePage";
+import EditProfilePage from "../../features/profiles/EditProfilePage";
 
 export default function OnboardingPage() {
   return (
@@ -18,7 +18,7 @@ export default function OnboardingPage() {
         </Link>
       </section>
 
-      <ProfilePage />
+      <EditProfilePage />
     </div>
   );
 }
