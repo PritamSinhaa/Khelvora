@@ -122,9 +122,26 @@ export async function playerHistory(userId, query) {
         } },
       ],
       total: [{ $count: "value" }],
+      summary: [{ $group: {
+        _id: null,
+        matches: { $sum: { $cond: [{ $in: ["$participationSide", ["home", "away"]] }, 1, 0] } },
+        wins: { $sum: { $cond: [{ $or: [
+          { $and: [{ $eq: ["$participationSide", "home"] }, { $gt: ["$result.homeScore", "$result.awayScore"] }] },
+          { $and: [{ $eq: ["$participationSide", "away"] }, { $gt: ["$result.awayScore", "$result.homeScore"] }] },
+        ] }, 1, 0] } },
+        draws: { $sum: { $cond: [{ $and: [
+          { $in: ["$participationSide", ["home", "away"]] },
+          { $eq: ["$result.homeScore", "$result.awayScore"] },
+        ] }, 1, 0] } },
+      } }, { $project: {
+        _id: 0,
+        matches: 1,
+        wins: 1,
+        winRate: { $cond: [{ $gt: ["$matches", 0] }, { $round: [{ $multiply: [{ $divide: ["$wins", "$matches"] }, 100] }, 0] }, 0] },
+      } }],
     } },
   ]);
-  return { items: page?.items || [], total: page?.total[0]?.value || 0, page: query.page, limit: query.limit, participationSourceNote: "History uses saved match roster snapshots or a previous yes attendance response. Current team membership is not used." };
+  return { items: page?.items || [], total: page?.total[0]?.value || 0, summary: page?.summary[0] || { matches: 0, wins: 0, draws: 0, winRate: 0 }, page: query.page, limit: query.limit, participationSourceNote: "History uses saved match roster snapshots or a previous yes attendance response. Current team membership is not used." };
 }
 
 export async function teamLeaderboard(query) {

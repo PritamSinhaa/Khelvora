@@ -6,6 +6,7 @@ import {
 import { accountView } from "../auth/auth.service.js";
 import { reverseGeocode } from "../../services/reverseGeocode.service.js";
 import { playerHistory } from "../statistics/statistics.service.js";
+import PlayerSport from "../player-sports/playerSport.model.js";
 
 export async function me(user) {
   return {
@@ -30,7 +31,13 @@ export async function update(user, data) {
 export async function profile(user, id) {
   await ensureUnblocked(user._id, id);
 
-  const record = await activeUser(id);
+  const [record, sports] = await Promise.all([
+    activeUser(id),
+    PlayerSport.find({ user: id })
+      .select("sport skillLevel positions")
+      .populate("sport", "name")
+      .lean(),
+  ]);
 
   return {
     id: record.id,
@@ -38,6 +45,9 @@ export async function profile(user, id) {
     avatarUrl: record.avatarUrl,
     bio: record.bio,
     city: record.city,
+    state: record.state,
+    country: record.country,
+    sports,
   };
 }
 

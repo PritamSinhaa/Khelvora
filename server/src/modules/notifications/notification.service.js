@@ -37,5 +37,11 @@ export async function read(user, id) {
   return notification;
 }
 
+export async function remove(user, id) {
+  const result = await Notification.deleteOne({ _id: id, user: user._id });
+  if (!result.deletedCount) throw new AppError("Notification not found.", 404);
+  return { removed: true };
+}
+
 export const readAll = (user) =>
   Notification.updateMany({ user: user._id, readAt: null }, { $set: { readAt: new Date() } });

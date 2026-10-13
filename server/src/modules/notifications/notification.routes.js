@@ -9,5 +9,6 @@ router.get("/", validate(validation.list, "query"), controller.list);
 router.get("/unread-count", controller.unreadCount);
 router.patch("/read-all", controller.readAll);
 router.patch("/:id/read", controller.read);
+router.delete("/:id", controller.remove);
 
 export default router;
